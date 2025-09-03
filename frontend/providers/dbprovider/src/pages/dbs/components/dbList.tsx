@@ -65,7 +65,6 @@ import {
   ModalFooter
 } from '@chakra-ui/react';
 import { setDBRemark } from '@/api/db';
-import { Search } from 'lucide-react';
 
 const DelModal = dynamic(() => import('@/pages/db/detail/components/DelModal'));
 
@@ -660,7 +659,21 @@ const DBList = ({
         )
       }
     ],
-    []
+    [
+      t,
+      alerts,
+      SystemEnv,
+      theme,
+      router,
+      handleManageData,
+      handleStartApp,
+      handleRestartApp,
+      handlePauseApp,
+      onOpenPause,
+      onOpenUpdateModal,
+      setUpdateAppName,
+      setDelAppName
+    ]
   );
 
   const table = useReactTable({
@@ -685,13 +698,13 @@ const DBList = ({
   });
 
   const isClientSide = useClientSideValue(true);
-  const { applistCompleted } = useGuideStore();
+  const { applistCompleted, _hasHydrated } = useGuideStore();
 
   useEffect(() => {
-    if (!applistCompleted && isClientSide) {
+    if (!applistCompleted && isClientSide && _hasHydrated) {
       startDriver(applistDriverObj(t, () => router.push('/db/edit')));
     }
-  }, [applistCompleted, t, router, isClientSide]);
+  }, [applistCompleted, t, router, isClientSide, _hasHydrated]);
 
   const delApp = dbList.find((i) => i.name === delAppName);
   return (
@@ -726,7 +739,7 @@ const DBList = ({
         <Box flex={1}></Box>
         <InputGroup w={'200px'} h={'36px'} mr={'12px'}>
           <InputLeftElement pointerEvents="none" h="full" alignItems="center">
-            <Search className="h-[18px] w-[18px]" strokeWidth={1.5} />
+            <MyIcon name="search" w={'18px'} h={'18px'} />
           </InputLeftElement>
           <Input
             placeholder={t('search_name_and_remark_placeholder')}
