@@ -110,6 +110,11 @@ import {
   ErrorResponseSchema as DeleteReleaseErrorResponseSchema
 } from '../v1/devbox/[name]/release/[tag]/schema';
 
+import {
+  RequestSchema as MonitorDevboxRequestSchema,
+  SuccessResponseSchema as MonitorDevboxSuccessResponseSchema
+} from '../v1/devbox/[name]/monitor/schema';
+
 import { NextResponse } from 'next/server';
 import { getToolsList } from 'sealos-mcp-sdk';
 import path from 'path';
@@ -715,6 +720,83 @@ const tmpOpenApiDocument = (sealosDomain: string, mcpTool: string) =>
         content: {
           'application/json': {
             schema: RestartDevboxErrorResponseSchema
+                }
+              }
+            }
+          }
+        }
+      },
+      '/api/v1/devbox/{name}/monitor': {
+        get: {
+          tags: ['Query'],
+          summary: 'Get devbox monitoring data',
+          description: 'Retrieve CPU and memory monitoring metrics for a specific devbox. Returns time-series data for the specified time range. If time parameters are not provided, defaults to the last 3 hours with 2-minute intervals.',
+          parameters: [
+            {
+              name: 'name',
+              in: 'path',
+              required: true,
+              description: 'Devbox name',
+              schema: {
+                type: 'string',
+                pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$',
+                minLength: 1,
+                maxLength: 63
+              }
+            },
+            {
+              name: 'start',
+              in: 'query',
+              required: false,
+              description: 'Start time in milliseconds (Unix timestamp)',
+              schema: {
+                type: 'string',
+                example: '1704067200000'
+              }
+            },
+            {
+              name: 'end',
+              in: 'query',
+              required: false,
+              description: 'End time in milliseconds (Unix timestamp)',
+              schema: {
+                type: 'string',
+                example: '1704085200000'
+              }
+            },
+            {
+              name: 'step',
+              in: 'query',
+              required: false,
+              description: 'Query step interval (e.g., "2m", "5m", "1h")',
+              schema: {
+                type: 'string',
+                example: '2m'
+              }
+            }
+          ],
+          responses: {
+            '200': {
+              description: 'Successfully retrieved monitoring data',
+              content: {
+                'application/json': {
+                  schema: MonitorDevboxSuccessResponseSchema
+                }
+              }
+            },
+            '400': {
+              description: 'Invalid devbox name or query parameters',
+              content: {
+                'application/json': {
+                  schema: ErrorResponseSchema
+                }
+              }
+            },
+            '500': {
+              description: 'Internal server error',
+              content: {
+                'application/json': {
+                  schema: ErrorResponseSchema
                 }
               }
             }

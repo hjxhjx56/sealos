@@ -1,7 +1,7 @@
 import 'zod-openapi/extend';
 import { z } from 'zod';
 
-export const MonitorQuerySchema = z.object({
+export const RequestSchema = z.object({
   start: z.string().optional().openapi({
     description: 'Start time in milliseconds',
     example: '1704067200000'
@@ -19,7 +19,7 @@ export const MonitorQuerySchema = z.object({
   description: 'Query parameters for monitoring data. If not provided, defaults to last 3 hours with 2 minutes interval.'
 });
 
-export const MonitorResponseSchema = z.array(
+export const SuccessResponseSchema = z.array(
   z.object({
     type: z.enum(['cpu', 'memory']).openapi({
       description: 'Monitor type'
@@ -38,4 +38,8 @@ export const MonitorResponseSchema = z.array(
   title: 'Monitor Response',
   description: 'Monitor data response containing CPU and Memory metrics'
 });
+
+// For backward compatibility
+export const MonitorQuerySchema = RequestSchema;
+export const MonitorResponseSchema = SuccessResponseSchema;
 
